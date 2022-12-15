@@ -10,7 +10,7 @@ public class test {
 		Game.Initiate();
 		Game.Start_Round();
 		
-		System.out.println(Game.Players[1].Hit_Or_Stay());
+		
 		
 	}
 

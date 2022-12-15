@@ -5,7 +5,7 @@ public class Player {
 	///////////////////////////// FIELDS /////////////////////////////
 	
 	String Name; // Name of the player.
-	boolean Can_Play = true; // Becomes false when player earnings are below the minimum bet
+	boolean Can_Play; // Becomes false when player earnings are below the minimum bet
 	int Earnings; // Player's current total money
 	int Bet; // Amount of money bet by the player for the round
 	int Push; // Amount of bet money pushed to the next round following a tie
@@ -99,9 +99,19 @@ public class Player {
 	
 	// Adds a card to the player's hand. Called twice when starting a round and once when hitting
 	public void Receive_Card(String Card, Game Game) {
-		String[] Temp_Deck = new String[this.Hand.length + 1];
-		for (int i = 0; i < this.Hand.length; i++) { Temp_Deck[i] = this.Hand[i]; }
-		Temp_Deck[this.Hand.length] = Card;
+		int Length;
+		String[] Temp_Deck;
+		
+		if (this.Hand == null) { 
+			Length = 0; 
+			Temp_Deck = new String[Length + 1];
+		}
+		else { 
+			Length = this.Hand.length; 
+			Temp_Deck = new String[Length + 1];
+			for (int i = 0; i < Length; i++) { Temp_Deck[i] = this.Hand[i]; }
+		}
+		Temp_Deck[Length] = Card;
 		this.Hand = Temp_Deck;
 	}
 }

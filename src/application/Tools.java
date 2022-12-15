@@ -123,20 +123,21 @@ public class Tools {
 	static void Show_Deck(Game Game, int Rows) {
 		int Length = Game.Curr_Deck.length; int Display_Row = 1;
 		for (int i = 0; i < Length; i++) {
-			System.out.println("| Index " + i + ": " + Game.Curr_Deck[i] + " ");
+			System.out.print("| Index " + i + ": " + Game.Curr_Deck[i] + " ");
 			if (i == Math.ceil(Length / Rows) * Display_Row) {
 				Display_Row++;
 				System.out.println("");
 			}
 		}
+		System.out.println("");
 	}
 
 	// Shows the hand of a player (Game.Players[i].Hand) in console
 	static void Show_Hands(Game Game) {
-		for (int i = 1; i < Game.Total_Players + 1; i++) {
-			System.out.println(Game.Players[i].Name + " has the following hand: ");
-			for (int j = 1; j < Game.Players[i].Hand.length + 1; j++) {
-				System.out.println("	Card " + j + ": " + Tools.Translate_Code(Game.Players[i].Hand[j - 1]) );
+		for (Player p : Game.Players) {
+			System.out.println(p.Name + " has the following hand: ");
+			for (int j = 1; j < p.Hand.length + 1; j++) {
+				System.out.println("	Card " + j + ": " + Tools.Translate_Code(p.Hand[j - 1]) );
 			}
 		}
 	}

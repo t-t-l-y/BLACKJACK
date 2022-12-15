@@ -77,7 +77,14 @@ public class Game {
 	
 	// Starts a new round
 	public void Start_Round() {
+		// Check if player can play
+		this.Remove_Players();
 		
+		// Deal two cards to each (remaining) player
+		this.Deal_To_Players();
+		
+		Tools.Show_Deck(this, 8); // TODO
+		Tools.Show_Hands(this); // TODO
 	}
 	
 	// Next turn
@@ -93,11 +100,48 @@ public class Game {
 		}
 	}
 	
+	// Remove players if they can no longer keep playing
+	public void Remove_Players() {
+		int Remove = 0; // Number of players to remove
+		
+		for (Player p : this.Players) {
+			p.Keep_Playing(this);
+			if (!p.Can_Play) { Remove++; }
+		}
+		
+		this.Total_Players -= Remove;
+		
+		// If there are no more players left
+		if (this.Total_Players == 0) {
+			System.out.println("Game is over. No one can keep playing!");
+		}
+		
+		// Otherwise, if a player is eliminated
+		else if (Remove != 0) {
+			Player[] Temp = new Player[this.Total_Players];
+			int Index = 0;
+			for (Player p : this.Players) {
+				if (p.Can_Play) {
+					Temp[Index] = p;
+					Index++;
+				}
+			}
+			this.Players = Temp;
+		}
+
+	}
+	
 	// Deal two cards to each player at the start of a round
 	public void Deal_To_Players() {
-		for (int i = 0; j < this.Total_Players; j++) {
-			for (int j = 0; j < this.Total_Players; j++) {
+		int Random;
+		for (int i = 0; i < 2; i++) {
+			for (Player p : Players) {
+				// Draw a random card
+				Random = Tools.Random_Card(this);
 				
+				// Give it to the player and remove from the current deck
+				p.Receive_Card(this.Curr_Deck[Random], this);
+				this.Remove_Card(Random);
 			}
 		}
 	}
@@ -127,7 +171,7 @@ public class Game {
 		this.Curr_Deck = Temp_Deck;
 	}
 	
-	// Empty player hand into junk pile
+	// Empty player hand into junk pile at the end of the round
 	public void Hand_To_Junk() {
 		int Player_Cards = 0; int Index = 0;
 		
