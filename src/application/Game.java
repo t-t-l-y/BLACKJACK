@@ -10,7 +10,6 @@ public class Game {
 	int Buy_In = 0; // Buy in to play
 	int Total_Players; // Number of total players including the dealer
 	int Curr_Player = 0; // Number of the current player
-	int Start_Player = 0; // Number of the starting player
 	int Number_Of_Decks; // Number of decks to be played with
 	String[] Curr_Deck; // State of the current deck
 	String[] Junk_Pile; // State of the current junk pile
@@ -75,21 +74,59 @@ public class Game {
 		} while (!Settings_Check[1]);
 	}
 	
-	// Starts a new round
+	// Starts a new round and plays the first turn
 	public void Start_Round() {
+		
 		// Check if player can play
 		this.Remove_Players();
 		
-		// Deal two cards to each (remaining) player
-		this.Deal_To_Players();
-		
-		Tools.Show_Deck(this, 8); // TODO
-		Tools.Show_Hands(this); // TODO
+		// Starts the round if there are remaining players
+		if (this.Total_Players != 1) {
+			this.Round++;
+			this.Turn = 0;
+			// Part of algorithm to determine next player
+			this.Curr_Player = this.Round % this.Total_Players;
+			if (this.Curr_Player == 0) { this.Curr_Player++; }
+			
+			// Deal two cards to each (remaining) player
+			this.Deal_To_Players();
+			Tools.Show_Hands(this);;
+		}
+	}
+	
+	public void End_Round() {
+		// Empty hand into junk pile
 	}
 	
 	// Next turn
-	public void Next_Turn() {
+	public void Play_Turn() {
+		this.Turn++;
+		String Decision;
 		
+		// Part of algorithm to determine next player
+		if ((this.Turn % this.Total_Players) == 0) { this.Curr_Player = 0; }
+		else if (this.Turn != 1) { 
+			this.Curr_Player = (this.Curr_Player + 1) % this.Total_Players;
+			if (this.Curr_Player == 0) { this.Curr_Player++; }
+			}
+		
+		System.out.println("It is " + this.Players[Curr_Player].Name + "'s turn.");
+		Tools.Show_Hands(this, Curr_Player);
+		
+		do {
+			Decision = this.Players[Curr_Player].Hit_Or_Stay();
+			if (Decision.equals("y")) {
+				int Random = Tools.Random_Card(this);
+				
+				// Check if there are remaining cards in the deck. Otherwise, add junk pile to the current deck
+				if (this.Curr_Deck.length == 0) { this.Empty_Junk(); }
+				
+				this.Players[Curr_Player].Receive_Card(this.Curr_Deck[Random]);
+				this.Remove_Card(Random);
+				this.Players[Curr_Player].Sum_Hand();
+				Tools.Show_Hands(this, Curr_Player);
+			}
+		} while (Decision.equals("y"));
 	}
 	
 	// Create the array of players
@@ -112,7 +149,7 @@ public class Game {
 		this.Total_Players -= Remove;
 		
 		// If there are no more players left
-		if (this.Total_Players == 0) {
+		if (this.Total_Players == 1) {
 			System.out.println("Game is over. No one can keep playing!");
 		}
 		
@@ -139,8 +176,12 @@ public class Game {
 				// Draw a random card
 				Random = Tools.Random_Card(this);
 				
+				// Check if there are remaining cards in the deck. Otherwise, add junk pile to the current deck
+				if (this.Curr_Deck.length == 0) { this.Empty_Junk(); }
+				
 				// Give it to the player and remove from the current deck
-				p.Receive_Card(this.Curr_Deck[Random], this);
+				p.Receive_Card(this.Curr_Deck[Random]);
+				p.Sum_Hand();
 				this.Remove_Card(Random);
 			}
 		}

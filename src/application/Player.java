@@ -60,21 +60,24 @@ public class Player {
 	
 	// Calculates the sum of the player's current hand
 	public void Sum_Hand() {
-		for (int i = 0; i < this.Hand.length; i++) {
-			switch (Integer.parseInt(this.Hand[i].substring(0,2))) {
+		this.Sum_Of_Hand = 0;
+		
+		for (String Card : this.Hand) {
+			switch (Integer.parseInt(Card.substring(0,2))) {
 			case 1:
 				this.Sum_Of_Hand += 11;
 				break;
 			case 2, 3, 4, 5, 6, 7, 8, 9, 10:
-				this.Sum_Of_Hand += Integer.parseInt(this.Hand[i].substring(0,2));
+				this.Sum_Of_Hand += Integer.parseInt(Card.substring(0,2));
 				break;
-			default:
+			case 11, 12, 13:
 				this.Sum_Of_Hand += 10;
+				break;
 			}
 		}
 		if (this.Sum_Of_Hand > 21) {
-			for (int i = 0; i < this.Hand.length; i++) {
-				if (this.Hand[i].substring(0, 2) == "01") { this.Sum_Of_Hand -= 10; }
+			for (String Card : this.Hand) {
+				if (Card.substring(0, 2).equals("01")) { this.Sum_Of_Hand -= 10; }
 				if (this.Sum_Of_Hand < 21) { break; }
 			}
 		}
@@ -82,7 +85,7 @@ public class Player {
 	
 	// Ask player if they will hit or stay
 	public String Hit_Or_Stay() {
-		if (this.Name == "Dealer") {
+		if (this.Name.equals("Dealer")) {
 			if (this.Sum_Of_Hand < 17) { return "y"; }
 			else { return "n"; }
 		}
@@ -98,7 +101,7 @@ public class Player {
 	}
 	
 	// Adds a card to the player's hand. Called twice when starting a round and once when hitting
-	public void Receive_Card(String Card, Game Game) {
+	public void Receive_Card(String Card) {
 		int Length;
 		String[] Temp_Deck;
 		

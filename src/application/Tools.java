@@ -132,15 +132,26 @@ public class Tools {
 		System.out.println("");
 	}
 
-	// Shows the hand of a player (Game.Players[i].Hand) in console
+	// Shows the hand of all players in console
 	static void Show_Hands(Game Game) {
 		for (Player p : Game.Players) {
 			System.out.println(p.Name + " has the following hand: ");
 			for (int j = 1; j < p.Hand.length + 1; j++) {
 				System.out.println("	Card " + j + ": " + Tools.Translate_Code(p.Hand[j - 1]) );
 			}
+			System.out.println("Current hand: " + p.Sum_Of_Hand);
 		}
 	}
+	
+	// Shows the hand of a single player in console
+		static void Show_Hands(Game Game, int Index) {
+			
+			System.out.println(Game.Players[Index].Name + " has the following hand: ");
+			for (int j = 1; j < Game.Players[Index].Hand.length + 1; j++) {
+				System.out.println("	Card " + j + ": " + Tools.Translate_Code(Game.Players[Index].Hand[j - 1]) );
+			}
+			System.out.println("Current hand: " + Game.Players[Index].Sum_Of_Hand);
+		}
 	
 	// Returns a random index from the array representing the current deck (Game.Curr_Deck)
 	static int Random_Card(Game Game) {
