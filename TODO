@@ -1,6 +1,0 @@
-Hit loop until player rejects ////////// loop_hit()
-When to empty hands and put back into deck ///////// rm_card()
-Reset card sum every round
-set starting player, current player
-betting system
-include dealer

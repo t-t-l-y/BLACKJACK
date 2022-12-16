@@ -90,7 +90,6 @@ public class Game {
 			
 			// Deal two cards to each (remaining) player
 			this.Deal_To_Players();
-			Tools.Show_Hands(this);;
 		}
 	}
 	
@@ -102,15 +101,21 @@ public class Game {
 	public void Play_Turn() {
 		this.Turn++;
 		String Decision;
+		boolean Hide_Card = true;
 		
 		// Part of algorithm to determine next player
-		if ((this.Turn % this.Total_Players) == 0) { this.Curr_Player = 0; }
+		if ((this.Turn % this.Total_Players) == 0) { 
+			this.Curr_Player = 0; 
+			Hide_Card = false;
+		}
 		else if (this.Turn != 1) { 
 			this.Curr_Player = (this.Curr_Player + 1) % this.Total_Players;
 			if (this.Curr_Player == 0) { this.Curr_Player++; }
 			}
 		
 		System.out.println("It is " + this.Players[Curr_Player].Name + "'s turn.");
+		Tools.Show_State(this, Curr_Player);
+		Tools.Show_Dealer_Hand(this, Hide_Card);
 		Tools.Show_Hands(this, Curr_Player);
 		
 		do {
@@ -166,6 +171,11 @@ public class Game {
 			this.Players = Temp;
 		}
 
+	}
+	
+	// Settle wins/losses of each player
+	public void Award_Players() {
+		
 	}
 	
 	// Deal two cards to each player at the start of a round
