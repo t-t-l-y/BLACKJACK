@@ -16,10 +16,6 @@ public class test {
 				Game.Play_Round();
 				Game.End_Round();
 			}
-			else {
-				System.out.println("Game over!");
-			}
 		}
 	}
-
 }

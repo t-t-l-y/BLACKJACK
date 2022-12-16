@@ -7,6 +7,7 @@ public class Game {
 	int Turn = 0; // Turn number
 	int Round = 0; // Round number
 	int Minimum_Bet = 0; // Minimum amount of money that can be bet by the player during the game
+	int busted; // Number of players that bust in a round
 	int Buy_In = 0; // Buy in to play
 	int Total_Players; // Number of total players including the dealer
 	int Curr_Player = 0; // Number of the current player
@@ -79,10 +80,15 @@ public class Game {
 		// Check if player can play
 		this.Remove_Players();
 		
+		// Reset number of players that have busted 
+		this.busted = 0;
+		
 		// Starts the round if there are remaining players
 		if (this.Total_Players != 1) {
 			this.Round++;
 			this.Turn = 0;
+			
+			System.out.println("Round " + this.Round + " has begun!");
 			
 			// Ask players for their bets
 			this.Player_Bets();
@@ -90,6 +96,7 @@ public class Game {
 			// Deal two cards to each (remaining) player
 			this.Deal_To_Players();
 			this.Check_Blackjack();
+			
 		}
 	}
 	
@@ -108,12 +115,23 @@ public class Game {
 		if (this.Players[0].Blackjack) {
 			Tools.Show_Hands(this);
 			System.out.println("Dealer has a Blackjack! The round is over.");
+			Tools.input.nextLine(); // Pause for players to read
+		}
+		// Case 2: Dealer does not have a Blackjack
+		else {
+			if (this.Total_Players != 2) { Tools.Show_Dealer_Hand(this); Tools.input.nextLine(); }
+			for (int i = 0; i < this.Total_Players; i++) {
+				this.Play_Turn();
+				
+				// If all betting players bust
+				if (this.busted == (this.Total_Players - 1)) {
+					System.out.println("Everyone has busted!");
+					Tools.input.nextLine(); // Pause for players to read
+					break;
+				}
+			}
 		}
 		
-		// Case 2: Dealer does not have a Blackjack
-		for (int i = 0; i < this.Total_Players; i++) {
-			this.Play_Turn();
-		}
 	}
 	
 	// Next turn
@@ -130,6 +148,7 @@ public class Game {
 		if (this.Players[Curr_Player].Blackjack) {
 			Tools.Show_Hands(this, Curr_Player);
 			System.out.println("Player " + this.Players[Curr_Player].Name + " has a Blackjack!");
+			Tools.input.nextLine(); // Pause for players to read
 		}
 		
 		// Case 2: Current player does not have a Blackjack
@@ -150,9 +169,28 @@ public class Game {
 					this.Players[Curr_Player].Receive_Card(this.Curr_Deck[Random]);
 					this.Remove_Card(Random);
 					this.Players[Curr_Player].Sum_Hand();
+					System.out.println(this.Players[Curr_Player].Name + "'s new hand sums to " + this.Players[Curr_Player].Sum_Of_Hand + ".");
 					Tools.Show_Hands(this, Curr_Player);
+					
+					// If the dealer hits, pause to allow players to read
+					if (this.Players[Curr_Player].Name.equals("Dealer")) { Tools.input.nextLine(); }
+					
+					// If the player busts after hitting
+					if (this.Players[Curr_Player].Sum_Of_Hand > 21) {
+						this.busted++;
+						System.out.println(this.Players[Curr_Player].Name + " has busted!");
+						Tools.input.nextLine(); // Pause for players to read
+						break;
+					}
+					
+					// If the player gets 21
+					if (this.Players[Curr_Player].Sum_Of_Hand == 21) {
+						System.out.println(this.Players[Curr_Player].Name + " has hit 21! Congratulations!");
+						Tools.input.nextLine(); // Pause for players to read
+						break;
+					}
 				}
-			
+				if (Decision.equals("n")) { System.out.println(this.Players[Curr_Player] + " has decided to stay!"); Tools.input.nextLine(); }
 			} while (Decision.equals("y"));
 		}
 	}
@@ -178,7 +216,7 @@ public class Game {
 		
 		// If there are no more players left
 		if (this.Total_Players == 1) {
-			System.out.println("Game is over. No one can keep playing!");
+			System.out.println("Game is over. No one can keep playing! The virtual house thanks you. :)");
 		}
 		
 		// Otherwise, if a player is eliminated
@@ -189,6 +227,10 @@ public class Game {
 				if (p.Can_Play) {
 					Temp[Index] = p;
 					Index++;
+				}
+				else {
+					System.out.println(p.Name + " has insufficient funds. They have dropped out!");
+					Tools.input.nextLine(); // Pause for players to read
 				}
 			}
 			this.Players = Temp;
@@ -202,7 +244,7 @@ public class Game {
 			do {
 				this.Players[i].Bet = Tools.ReceiveIntAnswer();
 				if (this.Players[i].Bet < this.Minimum_Bet) { System.out.println("Please bet at least " + this.Minimum_Bet + "$."); }
-				if (this.Players[i].Bet < this.Players[i].Earnings) { System.out.println("You only have" + this.Players[i].Earnings + "$ to bet."); }
+				if (this.Players[i].Bet > this.Players[i].Earnings) { System.out.println("You only have " + this.Players[i].Earnings + "$ to bet."); }
 			} while (this.Players[i].Bet < this.Minimum_Bet || this.Players[i].Bet > this.Players[i].Earnings);
 			System.out.println("Player " + this.Players[i].Name + " has bet " + this.Players[i].Bet + "$.");
 		}
@@ -219,35 +261,36 @@ public class Game {
 			
 			// CASE 1: Dealer and player have a Blackjack or have the same sum of hand (tie)
 			if (this.Players[0].Sum_Of_Hand == this.Players[i].Sum_Of_Hand) {
-				System.out.println(this.Players[i].Name + " has tied! Their bet has been returned to them.");
+				System.out.println(this.Players[i].Name + " has tied! Their bet has been returned to them. They now have " + this.Players[i].Earnings + "$.");
 			}
 			
 			// CASE 2: Dealer has a Blackjack but not the player
-			if (this.Players[0].Blackjack && !this.Players[i].Blackjack) {
+			else if (this.Players[0].Blackjack && (!this.Players[i].Blackjack)) {
 				this.Players[i].Earnings -= this.Players[i].Bet;
-				System.out.println("Since the dealer has a Blackjack, " + this.Players[i].Name + " has lost their bet of " + this.Players[i].Bet + ".");
+				System.out.println("Since the dealer has a Blackjack, " + this.Players[i].Name + " has lost their bet of " + this.Players[i].Bet + ". They now have " + this.Players[i].Earnings + "$.");
 			}
-			
+		
 			// CASE 3: Player has a Blackjack but not the dealer
-			if (!this.Players[0].Blackjack && this.Players[i].Blackjack) {
+			else if (!this.Players[0].Blackjack && this.Players[i].Blackjack) {
 				this.Players[i].Earnings += 1.5 * this.Players[i].Bet;
-				System.out.println(this.Players[i].Name + " has won with a Blackjack! They have earned " + (1.5 * this.Players[i].Bet) + "$.");
+				System.out.println(this.Players[i].Name + " has won with a Blackjack! Congratulations! They have earned " + (1.5 * this.Players[i].Bet) + "$. They now have " + this.Players[i].Earnings + "$.");
 			}
 			
 			// CASE 4: Neither have a Blackjack, but dealer has superior hand
-			if (this.Players[0].Sum_Of_Hand > this.Players[i].Sum_Of_Hand) {
+			else if (this.Players[0].Sum_Of_Hand > this.Players[i].Sum_Of_Hand) {
 				this.Players[i].Earnings -= this.Players[i].Bet;
-				System.out.println(this.Players[i].Name + " has lost their bet of " + this.Players[i].Bet + ".");
+				System.out.println(this.Players[i].Name + " has lost their bet of " + this.Players[i].Bet + "$. They now have " + this.Players[i].Earnings + "$.");
 			}
 			
 			// CASE 5: Neither have a Blackjack, but the player has a superior hand
-			if (this.Players[0].Sum_Of_Hand < this.Players[0].Sum_Of_Hand) {
+			else if (this.Players[0].Sum_Of_Hand < this.Players[i].Sum_Of_Hand) {
 				this.Players[i].Earnings += this.Players[i].Bet;
-				System.out.println(this.Players[i].Name + " has won! They have earned " + this.Players[i].Bet + "$.");
+				System.out.println(this.Players[i].Name + " has won! They have earned " + this.Players[i].Bet + "$. They now have " + this.Players[i].Earnings + "$.");
 			}
 
 			this.Players[i].Bet = 0;
 		}
+		Tools.input.nextLine(); // Pause for players to read
 	}
 	
 	// Deal two cards to each player at the start of a round

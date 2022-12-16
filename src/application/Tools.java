@@ -97,7 +97,6 @@ public class Tools {
 			break;
 		case 13:
 			Card_Name = "King";
-			break;
 		}
 		
 		// Translate suit
@@ -113,7 +112,6 @@ public class Tools {
 			break;
 		case "D":
 			Card_Name += " of Diamonds";
-			break;
 		}
 
 		return Card_Name;
@@ -150,14 +148,33 @@ public class Tools {
 		}
 	}
 	
-	// Shows the hand of the dealer with the option of hiding the first card when the boolean is true and does nothing when boolean is false
-		static void Show_Dealer_Hand(Game Game, boolean Hide_One) {
-			if (Hide_One) {
-				System.out.println(Game.Players[0].Name + " has the following hand: ");
-				System.out.println("	Card 1: Hidden,");
-				System.out.println("	Card 2: " + Tools.Translate_Code(Game.Players[0].Hand[1]));
+	// Shows the hand of all players in console while hiding one of the dealer's cards
+	static void Show_Dealer_Hand(Game Game) {
+		for (Player p : Game.Players) {
+			
+			// Hide one card for dealer
+			if (p.Name.equals("Dealer")) {
+				Show_Dealer_Hand(Game, true);
+			}
+			else {
+				
+				// Show all for other players
+				System.out.println(p.Name + " has the following hand: ");
+				for (int j = 1; j < p.Hand.length + 1; j++) {
+					System.out.println("	Card " + j + ": " + Tools.Translate_Code(p.Hand[j - 1]) );
+				}
 			}
 		}
+	}
+	
+	// Shows the hand of the dealer with the option of hiding the first card when the boolean is true and does nothing when boolean is false
+	static void Show_Dealer_Hand(Game Game, boolean Hide_One) {
+		if (Hide_One) {
+			System.out.println(Game.Players[0].Name + " has the following hand: ");
+			System.out.println("	Card 1: Hidden,");
+			System.out.println("	Card 2: " + Tools.Translate_Code(Game.Players[0].Hand[1]));
+		}
+	}
 	
 	// Shows the hand of a single player in console
 		static void Show_Hands(Game Game, int Index) {
