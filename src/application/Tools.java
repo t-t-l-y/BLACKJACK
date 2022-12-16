@@ -171,7 +171,7 @@ public class Tools {
 	static void Show_Dealer_Hand(Game Game, boolean Hide_One) {
 		if (Hide_One) {
 			System.out.println(Game.Players[0].Name + " has the following hand: ");
-			System.out.println("	Card 1: Hidden,");
+			System.out.println("	Card 1: Hidden");
 			System.out.println("	Card 2: " + Tools.Translate_Code(Game.Players[0].Hand[1]));
 		}
 	}
