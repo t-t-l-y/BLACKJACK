@@ -190,7 +190,7 @@ public class Game {
 						break;
 					}
 				}
-				if (Decision.equals("n")) { System.out.println(this.Players[Curr_Player] + " has decided to stay!"); Tools.input.nextLine(); }
+				if (Decision.equals("n")) { System.out.println(this.Players[Curr_Player].Name + " has decided to stay!"); Tools.input.nextLine(); }
 			} while (Decision.equals("y"));
 		}
 	}
