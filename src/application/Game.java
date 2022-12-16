@@ -62,7 +62,7 @@ public class Game {
 			// Set buy-in
 			Tools.AskQuestion("What would you like to set the buy-in to?");
 			this.Buy_In = Tools.ReceiveIntAnswer();
-			for (Player p : this.Players) { p.Set_Earnings(this.Buy_In); }
+			for (Player p : this.Players) { p.Earnings = this.Buy_In; }
 			
 			// Set minimum bet
 			Tools.AskQuestion("What would you like to set the minimum bet to? It must be less or equal than " + this.Buy_In + ".");
@@ -84,19 +84,24 @@ public class Game {
 		if (this.Total_Players != 1) {
 			this.Round++;
 			this.Turn = 0;
+			
+			// Ask players for their bets
+			this.Player_Bets();
+			
 			// Part of algorithm to determine next player
 			this.Curr_Player = this.Round % this.Total_Players;
 			if (this.Curr_Player == 0) { this.Curr_Player++; }
 			
 			// Deal two cards to each (remaining) player
 			this.Deal_To_Players();
+			this.Check_Blackjack();
 		}
 	}
 	
 	public void End_Round() {
 		// Empty hand into junk pile
 	}
-	
+	//////////////////// TODO CHECK BLACKJACK BOOLEAN ON TURN 1 AND BETTING STUFF //////////////////////////
 	// Next turn
 	public void Play_Turn() {
 		this.Turn++;
@@ -170,12 +175,48 @@ public class Game {
 			}
 			this.Players = Temp;
 		}
-
+	}
+	
+	// Assign bets to players
+	public void Player_Bets() {
+		
 	}
 	
 	// Settle wins/losses of each player
 	public void Award_Players() {
 		
+		for (Player p : this.Players) {
+			if (p.Sum_Of_Hand > 21) { p.Sum_Of_Hand = -1; }
+		}
+		
+		for (int i = 1; i < this.Total_Players; i++) {
+			
+			// CASE 1: Dealer and player have a Blackjack or have the same sum of hand (tie)
+			if ((this.Players[0].Sum_Of_Hand == this.Players[i].Sum_Of_Hand) {
+				this.Players[i].Earnings += this.Players[i].Bet;
+			}
+			
+			// CASE 2: Dealer has a Blackjack but not the player
+			else if (this.Players[0].Blackjack && !this.Players[i].Blackjack) {
+				this.Players[i].Earnings -= this.Players[i].Bet;
+			}
+			
+			// CASE 3: Player has a Blackjack but not the dealer
+			else if (!this.Players[0].Blackjack && this.Players[i].Blackjack) {
+				this.Players[i].Earnings += 1.5 * this.Players[i].Bet;
+			}
+			
+			// CASE 4: Neither have a Blackjack, but dealer has superior hand
+			else if (this.Players[0].Sum_Of_Hand > this.Players[i].Sum_Of_Hand) {
+				this.Players[i].Earnings -= this.Players[i].Bet;
+			}
+			
+			// CASE 5: Neither have a Blackjack, but the player has a superior hand
+			else if (this.Players[0].Sum_Of_Hand < this.Players[0].Sum_Of_Hand) {
+				this.Players[i].Earnings += this.Players[i].Bet;
+			}
+			this.Players[i].Bet = 0;
+		}
 	}
 	
 	// Deal two cards to each player at the start of a round
@@ -194,6 +235,16 @@ public class Game {
 				p.Sum_Hand();
 				this.Remove_Card(Random);
 			}
+		}
+	}
+	
+	// Check for blackjack hand
+	public void Check_Blackjack() {
+		for (Player p : this.Players) {
+			if (p.Hand.length == 2 && p.Sum_Of_Hand == 21) {
+				p.Blackjack = true;
+			}
+			else { p.Blackjack = false; }
 		}
 	}
 	

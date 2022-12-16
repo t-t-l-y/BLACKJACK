@@ -136,7 +136,7 @@ public class Tools {
 	static void Show_State(Game Game, int Index) {
 		if (Index != 0) {
 		System.out.println(Game.Players[Index].Name + " has " + Game.Players[Index].Earnings + "$.");
-		System.out.println(Game.Players[Index].Name + " is currently betting " + Game.Players[Index].Bet + "$ and " + Game.Players[Index].Push + "$ have been pushed from previous rounds.");
+		System.out.println(Game.Players[Index].Name + " is currently betting " + Game.Players[Index].Bet + "$.");
 		System.out.println(Game.Players[Index].Name + "'s current hand sums to " + Game.Players[Index].Sum_Of_Hand + ".");
 		}
 	}	

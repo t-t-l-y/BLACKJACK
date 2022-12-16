@@ -6,9 +6,9 @@ public class Player {
 	
 	String Name; // Name of the player.
 	boolean Can_Play; // Becomes false when player earnings are below the minimum bet
-	int Earnings; // Player's current total money
-	int Bet; // Amount of money bet by the player for the round
-	int Push; // Amount of bet money pushed to the next round following a tie
+	boolean Blackjack; // Becomes true when player is dealt an ace and a 10-value card
+	double Earnings; // Player's current total money
+	double Bet; // Amount of money bet by the player for the round
 	int Sum_Of_Hand; // Sum of player's cards
 	String Hand[]; // Player's hand
 	
@@ -18,29 +18,10 @@ public class Player {
 		this.Can_Play = KeepPlaying;
 	}
 	
-	// Sets the amount of money bet by a player for the round
-	public void Set_Bet(int Bet) {
-		this.Bet = Bet;
-	}
-	
-	// Sets the player's starting money
-	public void Set_Earnings(int Earnings) {
-		this.Earnings = Earnings;
-	}
-	
-	// Sets the amount of money pushed to the next round following a tie 
-	public void Set_Push(int Push) {
-		this.Push = Push;
-	}
-	
 	// Resets player's hand
 	public void Reset_Hand() {
 		String[] Temp = {};
 		this.Hand = Temp;
-	}
-	// Changes amount of money earned by a player. Positive means the player won money. Negative means the player lost money
-	public void Delta_Money(int MoneyEarned) {
-		this.Earnings += MoneyEarned;
 	}
 	
 	// Checks if the player can play the following round
